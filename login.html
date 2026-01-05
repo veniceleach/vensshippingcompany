@@ -83,6 +83,7 @@
             color: #ff1493;
             text-decoration: none;
             font-weight: bold;
+            cursor: pointer;
         }
 
         .links a:hover {
@@ -105,47 +106,64 @@
         <button type="submit">Login</button>
     </form>
 
-    <div id="errorMsg" class="error">
-        Invalid email or password.
-    </div>
+    <div id="errorMsg" class="error"></div>
 
     <div class="links">
+        <p><a onclick="resetPassword()">Forgot password?</a></p>
         <p>Don’t have an account? <a href="register.html">Register</a></p>
     </div>
 </div>
 
-<script>
-    /*
-        USER-BASED LOGIN SYSTEM
-        Reads registered users from localStorage
-        No hard-coded credentials
-    */
+<!-- SUPABASE -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
-    document.getElementById("loginForm").addEventListener("submit", function (e) {
+<script>
+    // 🔗 Supabase connection
+    const supabaseUrl = "https://twihmbhsqpjqqkihgtza.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3aWhtYmhzcXBqcXFraWhndHphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2Mzk0MDIsImV4cCI6MjA4MzIxNTQwMn0.pg-pcGhs1AwsvEpDNaipGTY2TxEqHUN6Q-w2rO-2ac4";
+
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    // 🔐 LOGIN
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
+        const errorBox = document.getElementById("errorMsg");
 
-        // Get users from registration
-        const users = JSON.parse(localStorage.getItem("vensUsers")) || [];
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
 
-        // Find matching user
-        const validUser = users.find(user =>
-            user.email === email && user.password === password
-        );
-
-        if (validUser) {
-            // Save login session
-            localStorage.setItem("vensLoggedIn", "true");
-            localStorage.setItem("vensUserEmail", email);
-
-            // Redirect to dashboard
-            window.location.href = "dashboard.html";
+        if (error) {
+            errorBox.style.display = "block";
+            errorBox.innerText = error.message;
         } else {
-            document.getElementById("errorMsg").style.display = "block";
+            window.location.href = "dashboard.html";
         }
     });
+
+    // 🔁 FORGOT PASSWORD
+    async function resetPassword() {
+        const email = document.getElementById("email").value.trim();
+
+        if (!email) {
+            alert("Please enter your email first.");
+            return;
+        }
+
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.origin + "/reset-password.html"
+        });
+
+        if (error) {
+            alert(error.message);
+        } else {
+            alert("Password reset link sent to your email.");
+        }
+    }
 </script>
 
 </body>
