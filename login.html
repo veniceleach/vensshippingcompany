@@ -1,95 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Vens Shipping Express</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Vens Shipping Express</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #ffe6f0, #ffffff);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .login-box {
-            background-color: #ffffff;
-            padding: 40px;
-            width: 100%;
-            max-width: 420px;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(255, 20, 147, 0.25);
-        }
-
-        .login-box h2 {
-            text-align: center;
-            color: #ff1493;
-            margin-bottom: 25px;
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 15px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-top: 5px;
-            border: 1px solid #ffb6c1;
-            border-radius: 6px;
-            outline: none;
-        }
-
-        input:focus {
-            border-color: #ff1493;
-        }
-
-        button {
-            width: 100%;
-            margin-top: 25px;
-            padding: 14px;
-            background-color: #ff1493;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #e01384;
-        }
-
-        .error {
-            color: red;
-            text-align: center;
-            margin-top: 15px;
-            display: none;
-        }
-
-        .links {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .links a {
-            color: #ff1493;
-            text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .links a:hover {
-            text-decoration: underline;
-        }
-    </style>
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #ffe6f0, #ffffff);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.login-box {
+    background-color: #ffffff;
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(255, 20, 147, 0.25);
+}
+.login-box h2 {
+    text-align: center;
+    color: #ff1493;
+    margin-bottom: 25px;
+}
+label { font-weight: bold; display: block; margin-top: 15px; }
+input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #ffb6c1;
+    border-radius: 6px;
+    outline: none;
+}
+input:focus { border-color: #ff1493; }
+button {
+    width: 100%;
+    margin-top: 25px;
+    padding: 14px;
+    background-color: #ff1493;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+}
+button:hover { background-color: #e01384; }
+.error, .success { text-align:center; margin-top:15px; display:none; font-weight:bold; }
+.error { color:red; }
+.success { color:green; }
+.links { text-align: center; margin-top: 20px; }
+.links a { color: #ff1493; text-decoration: none; font-weight: bold; }
+.links a:hover { text-decoration: underline; }
+</style>
 </head>
 <body>
 
@@ -107,64 +75,59 @@
     </form>
 
     <div id="errorMsg" class="error"></div>
+    <div id="successMsg" class="success"></div>
 
     <div class="links">
-        <p><a onclick="resetPassword()">Forgot password?</a></p>
         <p>Don’t have an account? <a href="register.html">Register</a></p>
+        <p><a href="reset-password.html">Forgot Password?</a></p>
     </div>
 </div>
 
-<!-- SUPABASE -->
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
 <script>
-    // 🔗 Supabase connection
-    const supabaseUrl = "https://twihmbhsqpjqqkihgtza.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3aWhtYmhzcXBqcXFraWhndHphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2Mzk0MDIsImV4cCI6MjA4MzIxNTQwMn0.pg-pcGhs1AwsvEpDNaipGTY2TxEqHUN6Q-w2rO-2ac4";
+const supabaseUrl = "https://twihmbhsqpjqqkihgtza.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3aWhtYmhzcXBqcXFraWhndHphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2Mzk0MDIsImV4cCI6MjA4MzIxNTQwMn0.pg-pcGhs1AwsvEpDNaipGTY2TxEqHUN6Q-w2rO-2ac4";
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+const loginForm = document.getElementById("loginForm");
+const errorMsg = document.getElementById("errorMsg");
 
-    // 🔐 LOGIN
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-        e.preventDefault();
+loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errorMsg.style.display = "none";
 
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
-        const errorBox = document.getElementById("errorMsg");
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
+    // Check if email exists
+    const { data: userData, error: fetchError } = await supabase.auth.getUserByEmail(email);
 
-        if (error) {
-            errorBox.style.display = "block";
-            errorBox.innerText = error.message;
-        } else {
-            window.location.href = "dashboard.html";
-        }
+    if(fetchError || !userData){
+        errorMsg.textContent = "No account found with this email. Please register.";
+        errorMsg.style.display = "block";
+        return;
+    }
+
+    // Try to sign in
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
     });
 
-    // 🔁 FORGOT PASSWORD
-    async function resetPassword() {
-        const email = document.getElementById("email").value.trim();
+    if(error){
+        errorMsg.textContent = "Invalid email or password.";
+        errorMsg.style.display = "block";
+    } else {
+        // Save login session
+        localStorage.setItem("vensLoggedIn", "true");
+        localStorage.setItem("vensUserEmail", email);
 
-        if (!email) {
-            alert("Please enter your email first.");
-            return;
-        }
-
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.origin + "/reset-password.html"
-        });
-
-        if (error) {
-            alert(error.message);
-        } else {
-            alert("Password reset link sent to your email.");
-        }
+        // Redirect
+        window.location.href = "dashboard.html";
     }
+});
 </script>
 
 </body>
 </html>
+   
